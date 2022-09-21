@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"os"
 
 	"github.com/github/git-bundle-server/internal/bundles"
 	"github.com/github/git-bundle-server/internal/core"
@@ -16,11 +17,39 @@ func (Update) subcommand() string {
 
 func (Update) run(args []string) error {
 	if len(args) != 1 {
-		// TODO: allow parsing <route> out of <url>
-		return errors.New("usage: git-bundle-server update <route>")
+		return errors.New("usage: git-bundle-server update (--all|<route>)")
+	}
+
+	if args[0] == "--all" {
+		return updateAll()
 	}
 
 	route := args[0]
+
+	return updateRoute(route)
+}
+
+func updateAll() error {
+	repos, err := core.GetRepositories()
+	if err != nil {
+		return err
+	}
+
+	for route := range repos {
+		fmt.Printf("Updating route %s\n", route)
+		routeErr := updateRoute(route)
+		if routeErr != nil {
+			fmt.Fprintf(os.Stderr, "Failed to update %s: %s", route, routeErr.Error())
+			if err == nil {
+				err = routeErr
+			}
+		}
+	}
+
+	return err
+}
+
+func updateRoute(route string) error {
 	repo, err := core.CreateRepository(route)
 	if err != nil {
 		return err

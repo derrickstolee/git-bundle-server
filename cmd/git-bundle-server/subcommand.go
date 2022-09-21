@@ -12,6 +12,5 @@ func all() []Subcommand {
 		Start{},
 		Stop{},
 		Update{},
-		UpdateAll{},
 	}
 }

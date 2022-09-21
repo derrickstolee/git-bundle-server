@@ -27,10 +27,10 @@ being managed by the bundle server.
   `https://github.com/git-for-windows/git` is assigned the route
   `/git-for-windows/git`. Run `git-bundle-server update` to initialize bundle
   information. Configure the web server to recognize this repository at that
-  route. Configure scheduler to run `git-bundle-server update-all` as
+  route. Configure scheduler to run `git-bundle-server update --all` as
   necessary.
 
-* `git-bundle-server update [--daily|--hourly] <route>`: For the
+* `git-bundle-server update [--daily|--hourly] (--all|<route>)`: For the
   repository in the current directory (or the one specified by `<route>`), fetch
   the latest content from the remote and create a new set of bundles and update
   the bundle list.  The `--daily` and `--hourly` options allow the scheduler to
@@ -38,10 +38,8 @@ being managed by the bundle server.
   be an "hourly" or "daily" bundle. If `--daily` is specified, then collapse the
   existing hourly bundles into a daily bundle. If there are too many daily
   bundles, then collapse the appropriate number of oldest daily bundles into the
-  base bundle.
-
-* `git-bundle-server update-all [<options>]`: For every configured route, run
-  `git-bundle-server update <options> <route>`. This is called by the scheduler.
+  base bundle. If `--all` is provided instead of a route, then update all routes
+  stored in the routes file.
 
 * `git-bundle-server stop <route>`: Stop computing bundles or serving content
   for the repository at the specified `<route>`. The route remains configured in

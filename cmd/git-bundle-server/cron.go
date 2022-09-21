@@ -14,7 +14,7 @@ func SetCronSchedule() error {
 		return fmt.Errorf("failed to get executable: %w", err)
 	}
 
-	dailySchedule := "0 0 * * * \"" + pathToExec + "\" update-all\n"
+	dailySchedule := "0 0 * * * \"" + pathToExec + "\" update --all\n"
 
 	scheduleBytes, err := core.LoadExistingSchedule()
 	if err != nil {
