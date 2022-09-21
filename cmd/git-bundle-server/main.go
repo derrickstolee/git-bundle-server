@@ -19,6 +19,9 @@ func main() {
 			if err != nil {
 				log.Fatal("Failed with error: ", err)
 			}
+			os.Exit(0)
 		}
 	}
+
+	log.Fatal("Unrecognized subcommand: ", os.Args[1])
 }
