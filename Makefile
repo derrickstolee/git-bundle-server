@@ -13,6 +13,7 @@ INSTALL_ROOT := /
 BINDIR := $(CURDIR)/bin
 DISTDIR := $(CURDIR)/_dist
 DOCDIR := $(CURDIR)/_docs
+TESTDIR := $(CURDIR)/_test
 
 # Platform information
 GOOS := $(shell go env GOOS)
@@ -26,6 +27,7 @@ PACKAGE_ARCH := $(GOARCH)
 APPLE_APP_IDENTITY =
 APPLE_INST_IDENTITY =
 APPLE_KEYCHAIN_PROFILE =
+TEST_E2E_PERF=
 
 # Build targets
 .PHONY: build
@@ -38,6 +40,18 @@ build:
 doc:
 	@scripts/make-docs.sh --docs="$(CURDIR)/docs/man" \
 			      --output="$(DOCDIR)"
+
+# Testing targets
+.PHONY: e2e-test
+e2e-test: build
+	@echo
+	@echo "======== Running end-to-end tests ========"
+	$(RM) -r $(TESTDIR)
+	@if [ -n "$(TEST_E2E_PERF)" ]; then \
+		./scripts/run-e2e-tests.sh --all; \
+	else \
+		./scripts/run-e2e-tests.sh; \
+	fi
 
 # Installation targets
 .PHONY: install
@@ -170,3 +184,4 @@ clean:
 	$(RM) -r $(BINDIR)
 	$(RM) -r $(DISTDIR)
 	$(RM) -r $(DOCDIR)
+	$(RM) -r $(TESTDIR)
