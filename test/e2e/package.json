@@ -5,7 +5,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "cucumber-js"
+    "test": "cucumber-js",
+    "test-all": "cucumber-js -p all"
   },
   "license": "MIT",
   "devDependencies": {
