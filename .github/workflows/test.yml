@@ -1,0 +1,41 @@
+name: End-to-end test
+
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      test-perf:
+        type: boolean
+        description: 'Whether to run the (slow) end-to-end perf tests'
+        default: false
+
+jobs:
+  e2e-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 'stable'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Clone repository
+        uses: actions/checkout@v3
+
+      - name: Install system dependencies for end-to-end tests
+        run: build/ci/install-dependencies.sh
+        shell: bash
+
+      - name: Enable perf tests
+        if: ${{ github.event.inputs.test-perf }}
+        run: echo "TEST_E2E_PERF=1" >> $GITHUB_ENV
+
+      - name: Run end-to-end tests
+        env:
+          TEST_E2E_PERF: ${{matrix.jobs.goarch}}
+        run: make e2e-test TEST_E2E_PERF="$TEST_E2E_PERF"
