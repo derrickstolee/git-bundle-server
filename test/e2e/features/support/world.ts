@@ -1,4 +1,5 @@
 import { setWorldConstructor, World, IWorldOptions } from '@cucumber/cucumber'
+import { randomUUID } from 'crypto'
 import { RemoteRepo } from '../classes/remote'
 import * as utils from './utils'
 import * as fs from 'fs'
@@ -8,6 +9,7 @@ import { BundleServer } from '../classes/bundleServer'
 
 export enum User {
   Me = 1,
+  Another,
 }
 
 interface BundleServerParameters {
@@ -59,6 +61,28 @@ export class BundleServerWorld extends World<BundleServerParameters> {
     return repo
   }
 
+  getRepoAtBranch(user: User, branch: string): ClonedRepository {
+    if (this.remote && !this.remote.isLocal) {
+      throw new Error("Remote is not initialized or does not allow pushes")
+    }
+
+    if (!this.repoMap.has(user)) {
+      this.cloneRepositoryFor(user)
+      utils.assertStatus(0, this.getRepo(user).cloneResult)
+    }
+
+    const clonedRepo = this.getRepo(user)
+
+    // TODO: figure out a better way to check whether the repo is empty
+    if (clonedRepo.runGit("show").status != 0) {
+      // Repo is empty, so make sure we're on the right branch
+      utils.assertStatus(0, clonedRepo.runGit("branch", "-m", branch))
+    } else {
+      utils.assertStatus(0, clonedRepo.runGit("switch", branch))
+      utils.assertStatus(0, clonedRepo.runGit("pull", "origin", branch))
+    }
+
+    return clonedRepo
   }
 
   cleanup(): void {
