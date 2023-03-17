@@ -12,6 +12,8 @@ Feature: Bundle server performance
     Then I compare the clone execution times
 
     Examples:
-      | repo                                  |
-      | https://github.com/git/git.git        | # takes ~2 minutes
-      | https://github.com/torvalds/linux.git | # takes ~30(!) minutes
+      | repo                                          |
+      | https://github.com/git/git.git                | # takes ~2 minutes
+      | https://github.com/git-for-windows/git.git    | # takes ~2 minutes
+      | https://github.com/kubernetes/kubernetes.git  | # takes ~3 minutes
+      | https://github.com/torvalds/linux.git         | # takes ~30(!) minutes
