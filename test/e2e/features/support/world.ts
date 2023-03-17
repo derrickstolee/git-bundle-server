@@ -25,6 +25,8 @@ export class BundleServerWorld extends World<BundleServerParameters> {
   // Bundle server
   bundleServer: BundleServer
   remote: RemoteRepo | undefined
+  bundleURIBase: string | undefined
+  bundleURI: string | undefined
 
   // Users
   repoMap: Map<User, ClonedRepository>

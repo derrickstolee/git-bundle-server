@@ -42,12 +42,20 @@ Given('another user removed {int} commits and added {int} commits to {string}',
 
 Given('I cloned from the remote repo with a bundle URI', async function (this: BundleServerWorld) {
   const user = User.Me
-  this.cloneRepositoryFor(user, this.bundleServer.bundleUri())
+  if (this.bundleURI !== undefined) {
+    this.cloneRepositoryFor(User.Me, this.bundleURI)
+  } else {
+    this.cloneRepositoryFor(User.Me, this.bundleServer.bundleUri())
+  }
   utils.assertStatus(0, this.getRepo(user).cloneResult)
 })
 
 When('I clone from the remote repo with a bundle URI', async function (this: BundleServerWorld) {
-  this.cloneRepositoryFor(User.Me, this.bundleServer.bundleUri())
+  if (this.bundleURI !== undefined) {
+    this.cloneRepositoryFor(User.Me, this.bundleURI)
+  } else {
+    this.cloneRepositoryFor(User.Me, this.bundleServer.bundleUri())
+  }
 })
 
 When('another developer clones from the remote repo without a bundle URI', async function (this: BundleServerWorld) {
@@ -76,7 +84,12 @@ Then('bundles are downloaded and used', async function (this: BundleServerWorld)
   let result = clonedRepo.runGit("config", "--get", "fetch.bundleURI")
   utils.assertStatus(0, result, "'fetch.bundleURI' is not set after clone")
   const actualURI = result.stdout.toString().trim()
-  assert.strictEqual(actualURI, this.bundleServer.bundleUri())
+
+  if (this.bundleURI !== undefined) {
+    assert.strictEqual(actualURI, this.bundleURI)
+  } else {
+    assert.strictEqual(actualURI, this.bundleServer.bundleUri())
+  }
 
   result = clonedRepo.runGit("for-each-ref", "--format=%(refname)")
   utils.assertStatus(0, result, "git for-each-ref failed")
